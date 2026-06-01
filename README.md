@@ -31,12 +31,14 @@ The Flask backend runs on a dedicated storage machine, while the React frontend 
 
 ## ✨ Features
 
-🔐 Auth — JWT-based signup & login with bcrypt password hashing
-📤 Chunked Uploads — Large files are split into 5MB chunks and reassembled server-side (handles files of any size reliably)
-📁 File Management — Upload, download, and delete files from a clean dashboard
-📊 Storage Usage Bar — Visual indicator of how much space you've used
-🎨 File Type Icons — Different icons and colors for images, videos, PDFs, and other files
-📱 Responsive Grid — Files displayed in a clean card grid
+*  JWT-based Authentication
+*  Password hashing with bcrypt
+*  Chunked file uploads (5MB chunks)
+*  Upload, download, and delete files
+*  Storage usage tracking
+*  File-type icons for better UX
+*  Responsive dashboard UI
+*  Fast local-network file transfers
 
 ---
 
