@@ -1,18 +1,35 @@
-☁️ Personal Cloud
-A self-hosted cloud storage system that lets you upload, download, and manage your files from anywhere — using your own hardware as the server.
+# ☁️ Personal Cloud
 
-Why? Google Drive has storage limits. iCloud costs money. This runs on a spare laptop you already own, and your speed depends only on your internet connection — not on a third-party server.
+A self-hosted cloud storage system that lets you upload, download, and manage your files from anywhere using your own hardware as the server.
 
+##  Why Personal Cloud?
 
-How It Works
+Google Drive has storage limits.
+
+iCloud costs money.
+
+With Personal Cloud, you use a spare laptop or PC as your own storage server. Your upload and download speeds depend on your network and internet connection rather than a third-party provider.
+
+---
+
+##  Architecture
+
+```text
 Your Phone / Laptop (Frontend)
-        ↓  HTTP over LAN or internet
-  Secondary Laptop (Backend + Storage)
-        ↓
-     MongoDB (file metadata) + Local Filesystem (actual files)
-You run the Flask backend on a secondary machine (your storage server). The React frontend runs on any device and talks to the backend over your local network or the internet.
+            │
+            │ HTTP (LAN / Internet)
+            ▼
+Secondary Laptop (Backend + Storage)
+            │
+            ▼
+MongoDB (Metadata) + Local Filesystem (Files)
+```
 
-Features
+The Flask backend runs on a dedicated storage machine, while the React frontend can be accessed from any device.
+
+---
+
+## ✨ Features
 
 🔐 Auth — JWT-based signup & login with bcrypt password hashing
 📤 Chunked Uploads — Large files are split into 5MB chunks and reassembled server-side (handles files of any size reliably)
@@ -21,62 +38,167 @@ Features
 🎨 File Type Icons — Different icons and colors for images, videos, PDFs, and other files
 📱 Responsive Grid — Files displayed in a clean card grid
 
+---
 
-Tech Stack
-LayerTechFrontendReact + Vite + Tailwind CSSBackendPython + FlaskDatabaseMongoDB (file metadata)AuthJWT + bcryptFile StorageLocal filesystem on your server
+## 🛠️ Tech Stack
 
-Project Structure
+| Layer          | Technology                  |
+| -------------- | --------------------------- |
+| Frontend       | React + Vite + Tailwind CSS |
+| Backend        | Python + Flask              |
+| Database       | MongoDB                     |
+| Authentication | JWT + bcrypt                |
+| File Storage   | Local Filesystem            |
+
+---
+
+##  Project Structure
+
+```text
 cloud/
 ├── backend/
-│   ├── app.py              # Flask API (auth, upload, download, delete)
-│   ├── uploads/            # Where files are stored on the server
-│   ├── .env                # MONGO_URI and SECRET_KEY
+│   ├── app.py
+│   ├── uploads/
+│   ├── .env
 │   └── requirements.txt
+│
 └── frontend/
     └── src/
         ├── pages/
         │   ├── Login.jsx
         │   ├── Signup.jsx
         │   └── Dashboard.jsx
+        │
         └── services/
-            └── api.js      # Axios base URL config
+            └── api.js
+```
 
-Getting Started
-Backend (run on your storage machine)
-bashcd backend
+---
+
+##  Backend Setup
+
+### 1. Move to Backend
+
+```bash
+cd backend
+```
+
+### 2. Install Dependencies
+
+```bash
 pip install -r requirements.txt
-Create a .env file:
+```
+
+### 3. Create Environment Variables
+
+Create a `.env` file:
+
+```env
 MONGO_URI=mongodb://localhost:27017
 SECRET_KEY=your_secret_key_here
-Start the server:
-bashpython app.py
-The server runs on 0.0.0.0:5000 — accessible to all devices on your network.
+```
 
-Frontend (run on your main machine)
-bashcd frontend
+### 4. Run the Server
+
+```bash
+python app.py
+```
+
+The backend will start on:
+
+```text
+http://0.0.0.0:5000
+```
+
+---
+
+##  Frontend Setup
+
+### 1. Move to Frontend
+
+```bash
+cd frontend
+```
+
+### 2. Install Packages
+
+```bash
 npm install
+```
+
+### 3. Start Development Server
+
+```bash
 npm run dev
-In src/services/api.js, point the base URL to your storage machine's local IP:
-jsconst API = axios.create({
-  baseURL: "http://<your-server-ip>:5000"
+```
+
+### 4. Configure Backend URL
+
+In:
+
+```text
+src/services/api.js
+```
+
+Set:
+
+```javascript
+const API = axios.create({
+  baseURL: "http://<your-server-ip>:5000",
 });
+```
 
-API Endpoints
-MethodEndpointDescriptionPOST/signupCreate a new accountPOST/loginLogin and receive a JWTPOST/upload-chunkUpload a file chunkGET/filesList all your filesGET/download/:idDownload a fileDELETE/delete/:idDelete a file
+---
 
-Environment Variables
-VariableDescriptionMONGO_URIYour MongoDB connection stringSECRET_KEYSecret used to sign JWT tokens
+## 🔌 API Endpoints
 
-Roadmap
+| Method | Endpoint      | Description        |
+| ------ | ------------- | ------------------ |
+| POST   | /signup       | Create Account     |
+| POST   | /login        | User Login         |
+| POST   | /upload-chunk | Upload File Chunks |
+| GET    | /files        | List Files         |
+| GET    | /download/:id | Download File      |
+| DELETE | /delete/:id   | Delete File        |
 
- Fix Signup page to match dark theme
- Mobile-friendly UI
- Folder / directory support
- File preview (images, PDFs)
- Search and filter files
- Public share links with expiry
- HTTPS support for remote access
+---
 
+## 🔐 Environment Variables
 
-License
-MIT
+| Variable   | Description               |
+| ---------- | ------------------------- |
+| MONGO_URI  | MongoDB Connection String |
+| SECRET_KEY | JWT Signing Secret        |
+
+---
+
+##  Roadmap
+
+* [ ] Dark Theme Improvements
+* [ ] Mobile UI Optimization
+* [ ] Folder Support
+* [ ] File Preview (Images & PDFs)
+* [ ] Search & Filtering
+* [ ] Public Share Links
+* [ ] HTTPS Support
+* [ ] Multi-user Storage Quotas
+
+---
+
+## 📄 License
+
+MIT License
+
+---
+
+## Contributing
+
+Contributions, suggestions, and feature requests are welcome.
+
+Feel free to fork the repository and submit pull requests.
+
+---
+
+##  Support
+
+If you find this project useful, consider giving it a star on GitHub.
