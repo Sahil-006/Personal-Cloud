@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+.env
+
+# Uploads (your actual stored files)
+backend/uploads/
+
+# Node
+node_modules/
+dist/
+
+# Misc
+.DS_Store
