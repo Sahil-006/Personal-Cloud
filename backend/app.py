@@ -8,6 +8,7 @@ import os
 import jwt
 import datetime
 import uuid
+import shutil
 
 load_dotenv()
 
@@ -103,6 +104,19 @@ def login():
         "username": user["username"]
     }), 200
 
+
+@app.route("/storage-info", methods=["GET"])
+def storage_info():
+    user_id = get_user_id()
+    if not user_id:
+        return jsonify({"message": "Unauthorized"}), 401
+    
+    usage = shutil.disk_usage(UPLOAD_FOLDER)
+    return jsonify({
+        "total": usage.total,
+        "used": usage.used,
+        "free": usage.free
+    }), 200
 
 # ─── Upload ───
 @app.route("/upload", methods=["POST"])
