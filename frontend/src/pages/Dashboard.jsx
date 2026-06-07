@@ -10,7 +10,8 @@ const formatBytes = (bytes) => {
   if (!bytes) return "0 B";
   if (bytes < 1024) return bytes + " B";
   if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
-  return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+  if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+  return (bytes / (1024 * 1024 * 1024)).toFixed(1) + " GB";
 };
 
 const getFileIcon = (format) => {
@@ -35,6 +36,7 @@ const getFileColor = (format) => {
 
 function Dashboard() {
   const [files, setFiles] = useState([]);
+  const [storageInfo, setStorageInfo] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState(null);
@@ -66,6 +68,22 @@ function Dashboard() {
   useEffect(() => {
     fetchFiles();
   }, []);
+
+  const fetchStorageInfo = async () => {
+  try {
+    const res = await API.get("/storage-info", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setStorageInfo(res.data);
+  } catch (err) {
+    console.error("Failed to fetch storage info", err);
+  }
+};
+
+useEffect(() => {
+  fetchFiles();
+  fetchStorageInfo();
+}, []);
 
   const handleUpload = async (e) => {
   const file = e.target.files[0];
@@ -228,21 +246,47 @@ function Dashboard() {
         </div>
 
         <div className="mx-8 mb-6 bg-[#141416] border border-white/5 rounded-2xl p-5">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <HardDrive size={16} className="text-white/50" />
-              Storage Usage
-            </div>
-            <span className="text-xs text-white/40">{formatBytes(totalBytes)} used</span>
-          </div>
-          <div className="w-full bg-white/5 rounded-full h-2">
-            <div
-              className="bg-white h-2 rounded-full transition-all duration-700"
-              style={{ width: `${usagePercent}%` }}
-            />
-          </div>
-          <p className="text-xs text-white/30 mt-2">{usagePercent}% of 10 GB display limit</p>
-        </div>
+  <div className="flex items-center justify-between mb-3">
+    <div className="flex items-center gap-2 text-sm font-medium">
+      <HardDrive size={16} className="text-white/50" />
+      Drive Storage
+    </div>
+    <span className="text-xs text-white/40">
+      {storageInfo
+        ? `${formatBytes(storageInfo.free)} free`
+        : "Loading..."}
+    </span>
+  </div>
+  <div className="w-full bg-white/5 rounded-full h-2">
+    <div
+      className="h-2 rounded-full transition-all duration-700"
+      style={{
+        width: storageInfo
+          ? `${Math.min((storageInfo.used / storageInfo.total) * 100, 100).toFixed(1)}%`
+          : "0%",
+        background: storageInfo
+          ? (storageInfo.used / storageInfo.total) > 0.85
+            ? "#f87171"  // red when above 85%
+            : (storageInfo.used / storageInfo.total) > 0.6
+            ? "#fb923c"  // orange when above 60%
+            : "white"    // white when healthy
+          : "white"
+      }}
+    />
+  </div>
+  <div className="flex justify-between mt-2">
+    <p className="text-xs text-white/30">
+      {storageInfo
+        ? `${formatBytes(storageInfo.used)} used of ${formatBytes(storageInfo.total)}`
+        : "Fetching disk info..."}
+    </p>
+    <p className="text-xs text-white/30">
+      {storageInfo
+        ? `${Math.min((storageInfo.used / storageInfo.total) * 100, 100).toFixed(1)}%`
+        : ""}
+    </p>
+  </div>
+</div>
 
         <div className="flex-1 overflow-y-auto px-8 pb-8">
           <h3 className="text-sm font-semibold text-white/50 uppercase tracking-widest mb-4">
